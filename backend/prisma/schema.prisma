@@ -11,8 +11,76 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Status {
+  INVITED
+  DECLINED
+  ACCEPTED
+}
+
+model UserStatus {
+  id      Int     @id @default(autoincrement())
+  eventId String
+  event   Event   @relation(fields: [eventId], references: [id])
+  userId  Int
+  user    User    @relation(fields: [userId], references: [id])
+  status  Status
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  avatar    String
+  createdAt DateTime
+  updatedAt DateTime @updatedAt
+  role      Role
+}
+
+model ThankYou {
+  id        Int      @id @default(autoincrement())
+  eventId   String
+  userId    Int
+  toUserId  Int
+  message   String
+  createdAt DateTime
+}
+
+model Pairings {
+  id        Int      @unique
+  eventId   String
+  santaId   Int
+  personId  Int
+  createdAt DateTime
+  updatedAt DateTime
+}
+
+model Event {
+  id           String       @id @default(uuid())
+  name         String
+  date         DateTime
+  createdAt    DateTime
+  updatedAt    DateTime
+  sendReminder Boolean
+  userStatus   UserStatus[]
+}
+
+model WishList {
+  id              Int      @id @default(autoincrement())
+  name            String
+  url             String
+  userId          Int
+  createdAt       DateTime
+  updatedAt       DateTime
+  order           Int
+  eventId         Int
+  siteImage       String
+  siteTitle       String
+  siteDescription String
 }
