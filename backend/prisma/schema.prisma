@@ -32,21 +32,21 @@ model UserStatus {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  email      String       @unique
-  password   String?
-  firstName  String?
-  lastName   String?
-  avatar     String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt @default(now())
-  role       Role         @default(USER)
-  userStatus UserStatus[]
+  id             Int          @id @default(autoincrement())
+  email          String       @unique
+  password       String?
+  firstName      String?
+  lastName       String?
+  avatar         String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+  role           Role         @default(USER)
+  userStatus     UserStatus[]
   thankYouAuthor ThankYou[]   @relation(name: "ThankYou_User")
   thankYouToUser ThankYou[]   @relation(name: "ThankYou_ToUser")
   santa          Pairings[]   @relation(name: "Pairings_Santa")
   person         Pairings[]   @relation(name: "Pairings_Person")
-  wishList     WishList[]
+  wishList       WishList[]
 }
 
 model ThankYou {
@@ -91,12 +91,12 @@ model WishList {
   name            String
   url             String
   userId          Int
-  user            User      @relation(fields: [userId], references: [id])
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  user            User     @relation(fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   order           Int?
   eventId         String
-  event           Event     @relation(fields: [eventId], references: [id])
+  event           Event    @relation(fields: [eventId], references: [id])
   siteImage       String?
   siteTitle       String?
   siteDescription String?
