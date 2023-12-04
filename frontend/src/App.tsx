@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {createClient, Session} from '@supabase/supabase-js';
 
-function App() {
-  const [count, setCount] = useState(0)
+import './index.css';
+import {useEffect, useState} from "react";
+import {Auth} from "@supabase/auth-ui-react";
 
-  return (
-    <>
+const App = () => {
+  const supabase = createClient(
+    'https://czahejlcmwhrgnpvfuvf.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6YWhlamxjbXdocmducHZmdXZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE1NzQ5MjEsImV4cCI6MjAxNzE1MDkyMX0.eZUKRhdmHbhYFss93kXQq8EzGkI5evedwv9YOvwFuqg'
+  );
+
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({data: {session}}) => setSession(session));
+  }, []);
+
+  const handleLogOutClick = () => supabase.auth.signOut().then(() => setSession(null));
+
+  if (!session) {
+    return (
+      <div className="w-[400px]">
+        <Auth supabaseClient={supabase} />
+      </div>
+    );
+  }
+  else {
+    return (
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <h1>Logged in!</h1>
+        <button onClick={handleLogOutClick} className="bg-blue-400 p-[16px] rounded">Log out</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    );
+  }
+};
 
-export default App
+export default App;
