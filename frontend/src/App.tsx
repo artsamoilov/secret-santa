@@ -1,8 +1,9 @@
 import {createClient, Session} from '@supabase/supabase-js';
-
-import './index.css';
 import {useEffect, useState} from "react";
-import {Auth} from "@supabase/auth-ui-react";
+import {Link, Route, Routes} from "react-router-dom";
+import LoginPage from "./pages/LoginPage/LoginPage.tsx";
+import DashboardPage from "./pages/DashboardPage/DashboardPage.tsx";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute.tsx";
 
 const App = () => {
   const supabase = createClient(
@@ -13,26 +14,38 @@ const App = () => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({data: {session}}) => setSession(session));
-  }, []);
+    if (!session) {
+      supabase.auth.getSession()
+        .then(({data: {session}}) => setSession(session));
+    }
+  }, [supabase]);
 
-  const handleLogOutClick = () => supabase.auth.signOut().then(() => setSession(null));
+  console.log(session?.user.role);
 
-  if (!session) {
-    return (
-      <div className="w-[400px]">
-        <Auth supabaseClient={supabase} />
-      </div>
-    );
-  }
-  else {
-    return (
-      <div>
-        <h1>Logged in!</h1>
-        <button onClick={handleLogOutClick} className="bg-blue-400 p-[16px] rounded">Log out</button>
-      </div>
-    );
-  }
+  // if (!session) {
+  //   return <i>Loading...</i>;
+  // }
+
+  return (
+    <Routes>
+      <Route
+        index
+        element={
+        <PrivateRoute role={session?.user.role}>
+          <DashboardPage />
+        </PrivateRoute>
+      }
+      />
+      <Route
+        path="/login"
+        element={<LoginPage session={session} supabase={supabase} />}
+      />
+      <Route
+        path="*"
+        element={<div><h1>Error</h1><Link to='/'>Go to main</Link></div>}
+      />
+    </Routes>
+  );
 };
 
 export default App;

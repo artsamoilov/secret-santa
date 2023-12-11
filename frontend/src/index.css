@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    background-color: #17293b;
+    color: aliceblue;
+}
+
 @layer base {
     .label,
     label {
@@ -185,4 +190,8 @@
         -webkit-text-stroke-color: white;
         @apply text-black;
     }
+}
+
+.supabase-auth-ui_ui-label.c-bpexlo {
+    display: none;
 }
